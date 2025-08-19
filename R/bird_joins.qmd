@@ -53,18 +53,28 @@ rename(bird_obs_notes = notes)
 
 birds <-
   bird_observations %>% 
+  # join obs to species
   full_join(taxalists, by = "species_id") %>%
+  # join both to sites
   full_join(sites, by = "site_id") %>% 
+  # join all three to surveys
   full_join(surveys, by = "site_id") %>% 
+  # select desired columns
   select(c(survey_date, common_name, park_name, bird_count))
 
 birds <-
 birds %>% 
+  # make a new column with lubridate month function
   mutate(survey_month = month(survey_date)) %>% 
+  # make new column a factor
   mutate(survey_month = factor(survey_month)) %>% 
+  # move the new column
   relocate(survey_month, .after = survey_date) %>% 
+  # group by park name and survey money
   group_by(park_name, survey_month) %>% 
+  # show me sums of bird counts per group
   summarise(tot_bird_count = sum(bird_count)) %>% 
+  # only show me these parks
   filter(park_name %in% c("Lindo", "Orme", "Palomino", "Sonrisa"))
 
 ```
